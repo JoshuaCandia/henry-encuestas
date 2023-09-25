@@ -1,7 +1,9 @@
+import Form from './views/Form'
+
 function App() {
    return (
       <div>
-         <h1 className='text-3xl font-bold underline'>Hello</h1>
+         <Form />
       </div>
    )
 }
