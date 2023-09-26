@@ -55,7 +55,7 @@ function Form() {
                onChange={(e) => setSurvey({ ...survey, full_name: e.target.value })}
             />
          </div>
-         {/* Preferred language */}
+         {/* Preferred languages */}
          <div>
             <Select
                isRequired
