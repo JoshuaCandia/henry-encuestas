@@ -12,8 +12,9 @@ const fillDb = async (req, res) => {
   }
   try {
     const response = await fillDbController(bodyItems)
+
     if (!response) throw new Error('Error al llenar base de datos')
-    res.send(response)
+    res.status(200).send(response)
   } catch (error) {
     console.error(error)
     res.status(500).send(error.message)

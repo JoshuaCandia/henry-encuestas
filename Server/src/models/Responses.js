@@ -5,10 +5,9 @@ module.exports = sequelize => {
     'Responses',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        allowNull: false,
-        autoIncrement: true
+        defaultValue: DataTypes.UUIDV4
       },
       fullName: {
         type: DataTypes.STRING,

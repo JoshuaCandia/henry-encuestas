@@ -6,7 +6,7 @@ const surveyData = (req, res) => {
     if (!response) throw new Error()
     res.status(200).json(response)
   } catch (error) {
-    console.log(error)
+    console.error(error)
     res.status(400).send(error)
   }
 }
