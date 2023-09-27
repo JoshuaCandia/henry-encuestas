@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const router = Router()
-//handlers
+// handlers
 const fillDb = require('../handlers/fillDb')
 const surveyData = require('../handlers/surveyData')
 

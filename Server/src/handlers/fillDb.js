@@ -2,8 +2,16 @@ const { fillDbController } = require('../controllers/fillDb')
 
 const fillDb = async (req, res) => {
   const { body } = req
+  const bodyItems = {
+    fullName: body.full_name,
+    phoneNumber: body.phone_number,
+    startDate: body.start_date,
+    preferredLanguage: body.preferred_language,
+    howFound: body.how_found,
+    newsletterSubscription: body.newsletter_subscription
+  }
   try {
-    const response = await fillDbController(body)
+    const response = await fillDbController(bodyItems)
     if (!response) throw new Error('Error al llenar base de datos')
     res.send(response)
   } catch (error) {
