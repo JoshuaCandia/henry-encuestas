@@ -43,7 +43,14 @@ export const useValidations = () => {
             if (!value.length) {
                newErrors.start_date = 'Debe seleccionar una fecha'
             } else {
-               newErrors.start_date = ''
+               const selectedDate = new Date(value)
+               const today = new Date()
+
+               if (selectedDate > today) {
+                  newErrors.start_date = 'La fecha no puede ser mayor a hoy'
+               } else {
+                  newErrors.start_date = ''
+               }
             }
             break
          }
