@@ -40,7 +40,7 @@ export const useValidations = () => {
          }
 
          case 'start_date': {
-            if (!value) {
+            if (!value.length) {
                newErrors.start_date = 'Debe seleccionar una fecha'
             } else {
                newErrors.start_date = ''

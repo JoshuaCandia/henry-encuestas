@@ -4,11 +4,15 @@ import axios from 'axios'
 import { useValidations } from '../validations/useValidations'
 //components
 import Swal from 'sweetalert2'
-import { Input } from '@nextui-org/react'
-import { Select, SelectItem } from '@nextui-org/react'
-import { RadioGroup, Radio } from '@nextui-org/react'
-import { Checkbox } from '@nextui-org/react'
-import { Button } from '@nextui-org/react'
+import {
+   Input,
+   Select,
+   SelectItem,
+   RadioGroup,
+   Radio,
+   Checkbox,
+   Button
+} from '@nextui-org/react'
 //assets
 import logo from '../assets/logo.png'
 function Form() {
@@ -21,7 +25,7 @@ function Form() {
       how_found: '',
       newsletter_subscription: false
    })
-   const { errors, validate } = useValidations(survey)
+   const { errors, validate } = useValidations()
 
    useEffect(() => {
       const execute = async () => {
@@ -32,32 +36,18 @@ function Form() {
       execute()
    }, [])
 
-   const handleChangeName = (e) => {
-      validate(e.target.value)
-      setSurvey({ ...survey, full_name: e.target.value })
+   const handleChange = (e) => {
+      validate(e.target.name, e.target.value)
+      setSurvey({ ...survey, [e.target.name]: e.target.value })
    }
 
-   const handleChangePhone = (e) => {
-      validate(e.target.value)
-      setSurvey({ ...survey, phone_number: e.target.value })
-   }
-
-   const handleChangeStartDate = (e) => {
-      validate(e.target.value)
-      setSurvey({ ...survey, start_date: e.target.value })
-   }
-
-   const handleChangePreferredLanguage = (e) => {
-      validate(e.target.value)
-      setSurvey({ ...survey, preferred_language: e.target.value })
-   }
-
-   const handleChangeHowFound = (e) => {
-      validate(e.target.value)
-      setSurvey({ ...survey, how_found: e.target.value })
+   const handleChangeNewsletter = (e) => {
+      setSurvey({ ...survey, newsletter_subscription: e.target.checked })
    }
 
    const handleSubmit = (e) => {
+      e.preventDefault()
+
       if (
          errors.full_name ||
          errors.phone_number ||
@@ -70,26 +60,31 @@ function Form() {
             title: 'Oops...',
             text: 'Hay errores en el formulario'
          })
+      } else if (
+         !survey.full_name ||
+         !survey.phone_number ||
+         !survey.start_date ||
+         !survey.preferred_language ||
+         !survey.how_found
+      ) {
+         Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Los campos no pueden estar vacios'
+         })
       }
-      e.preventDefault()
-   }
-
-   const handleChangeNewsletter = (e) => {
-      setSurvey({ ...survey, newsletter_subscription: e.target.checked })
    }
 
    return (
       <form
          onSubmit={handleSubmit}
-         className='relative bottom-12 px-24 bg-white w-full md:w-[80%]  xl:w-1/2 flex flex-col items-between gap-16 py-12'
+         className='shadow-lg relative bottom-12 px-24 bg-white w-full md:w-[80%]  xl:w-1/2 flex flex-col items-between gap-4 py-12'
       >
-         <div className=''>
-            <img
-               className='w-56'
-               src={logo}
-               alt=''
-            />
-         </div>
+         <img
+            className='w-56'
+            src={logo}
+            alt=''
+         />
 
          {/* Full name */}
          <div>
@@ -98,13 +93,14 @@ function Form() {
                className='w-full'
                label={surveyData[0]?.label}
                type={surveyData[0]?.type}
+               name={surveyData[0]?.name}
                value={survey?.full_name}
-               onChange={(e) => handleChangeName(e)}
+               onChange={(e) => handleChange(e)}
             />
             {errors.full_name ? (
-               <p className='text-red-500'>{errors.full_name}</p>
+               <p className='text-red-500 h-8'>{errors.full_name}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
          {/* Phone number */}
@@ -114,13 +110,14 @@ function Form() {
                className='w-full'
                label={surveyData[1]?.label}
                type={surveyData[1]?.type}
+               name={surveyData[1]?.name}
                value={survey?.phone_number}
-               onChange={(e) => handleChangePhone(e)}
+               onChange={(e) => handleChange(e)}
             />
             {errors.phone_number ? (
-               <p className='text-red-500'>{errors.phone_number}</p>
+               <p className='text-red-500 h-8'>{errors.phone_number}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
 
@@ -130,14 +127,15 @@ function Form() {
             <input
                label={surveyData[2]?.label}
                type={surveyData[2]?.type}
+               name={surveyData[2]?.name}
                value={survey?.start_date}
                className='bg-gray-100 w-full tap-highlight-transparent shadow-sm px-3 min-h-unit-10 rounded-medium items-centers justify-center gap-0 transition-background motion-reduce:transition-none !duration-150 outline-none group-data-[focus-visible=true]:z-10 group-data-[focus-visible=true]:ring-2 group-data-[focus-visible=true]:ring-focus group-data-[focus-visible=true]:ring-offset-2 h-14 py-2 is-filled'
-               onChange={(e) => handleChangeStartDate(e)}
+               onChange={(e) => handleChange(e)}
             />
             {errors.start_date ? (
-               <p className='text-red-500'>{errors.start_date}</p>
+               <p className='text-red-500 h-8'>{errors.start_date}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
          {/* Preferred languages */}
@@ -148,9 +146,10 @@ function Form() {
                label={surveyData[3]?.label}
                placeholder={surveyData[3]?.label}
                aria-label={surveyData[3]?.label}
+               name={surveyData[3]?.name}
                className='w-full'
                value={survey?.preferred_language}
-               onChange={(e) => handleChangePreferredLanguage(e)}
+               onChange={(e) => handleChange(e)}
             >
                {surveyData[3]?.options.map((option, index) => (
                   <SelectItem
@@ -162,9 +161,9 @@ function Form() {
                ))}
             </Select>
             {errors.preferred_language ? (
-               <p className='text-red-500'>{errors.preferred_language}</p>
+               <p className='text-red-500 h-8'>{errors.preferred_language}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
 
@@ -172,8 +171,9 @@ function Form() {
          <div>
             <p className='bold text-xl mb-4'>¿Cómo lo encontraste?</p>
             <RadioGroup
+               name='how_found'
                value={survey?.how_found}
-               onChange={(e) => handleChangeHowFound(e)}
+               onChange={(e) => handleChange(e)}
             >
                {surveyData[4]?.options.map((option, index) => (
                   <Radio
@@ -185,9 +185,9 @@ function Form() {
                ))}
             </RadioGroup>
             {errors.how_found ? (
-               <p className='text-red-500'>{errors.how_found}</p>
+               <p className='text-red-500 h-8'>{errors.how_found}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
          {/* Newsletter */}
@@ -200,9 +200,9 @@ function Form() {
                Recibir newsletter
             </Checkbox>
             {errors.newsletter_subscription ? (
-               <p className='text-red-500'>{errors.newsletter_subscription}</p>
+               <p className='text-red-500 h-8'>{errors.newsletter_subscription}</p>
             ) : (
-               <p />
+               <p className='h-8' />
             )}
          </div>
 
