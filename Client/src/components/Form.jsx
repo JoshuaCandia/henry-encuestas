@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useValidations } from '../validations/useValidations'
+import { useNavigate } from 'react-router-dom'
+
 //components
 import Swal from 'sweetalert2'
 import {
@@ -15,18 +17,12 @@ import {
 } from '@nextui-org/react'
 //assets
 import logo from '../assets/logo.png'
-function Form() {
-   const [surveyData, setSurveyData] = useState([])
-   const [survey, setSurvey] = useState({
-      full_name: '',
-      phone_number: '',
-      start_date: '',
-      preferred_language: '',
-      how_found: '',
-      newsletter_subscription: false
-   })
-   const { errors, validate } = useValidations()
+function Form({ setLoading, setId, survey, setSurvey }) {
+   let navigate = useNavigate()
 
+   const [edit, setEdit] = useState(false)
+   const [surveyData, setSurveyData] = useState([])
+   const { errors, validate } = useValidations()
    useEffect(() => {
       const execute = async () => {
          const { data } = await axios('http://localhost:3001/')
@@ -36,10 +32,18 @@ function Form() {
       execute()
    }, [])
 
+   useEffect(() => {
+      const savedSurveyData = localStorage.getItem('surveyData')
+
+      if (savedSurveyData) {
+         const parsedSurveyData = JSON.parse(savedSurveyData)
+         setSurvey(parsedSurveyData)
+         setEdit(true)
+      }
+   }, [setSurvey])
    const handleChange = (e) => {
       validate(e.target.name, e.target.value)
       setSurvey({ ...survey, [e.target.name]: e.target.value })
-      console.log(e.target.value)
    }
 
    const handleChangeNewsletter = (e) => {
@@ -74,14 +78,43 @@ function Form() {
             text: 'Los campos no pueden estar vacios'
          })
       } else {
-         axios.post('http://localhost:3001/filldb', survey)
+         localStorage.setItem('surveyData', JSON.stringify(survey))
+
+         Swal.fire({
+            title: 'Estas seguro?',
+            icon: 'warning',
+            showDenyButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Si, Enviar!'
+         }).then((result) => {
+            if (result.isConfirmed) {
+               setLoading(true)
+               setTimeout(() => {
+                  setLoading(false)
+                  navigate('/submit')
+               }, 500)
+            } else {
+               navigate('/')
+            }
+         })
+
+         axios
+            .post('http://localhost:3001/filldb', survey)
+            .then((response) => {
+               const id = response.data.id
+               setId(id)
+            })
+            .catch((error) => {
+               console.error(`Error en la solicitud POST: ${error.message}`)
+            })
       }
    }
 
    return (
       <form
          onSubmit={handleSubmit}
-         className='shadow-lg relative bottom-12 px-24 bg-white w-full md:w-[80%]  xl:w-1/3 flex flex-col items-between gap-4 py-12'
+         className='shadow-lg relative bottom-12 px-12 md:px-24 py-12 bg-white w-full md:w-[50%] xl:w-1/3 flex flex-col items-between gap-4 '
       >
          <img
             className='w-32'
@@ -155,7 +188,7 @@ function Form() {
             >
                {surveyData[3]?.options.map((option) => (
                   <SelectItem
-                     key={option.value}
+                     key={option.label}
                      value={option.label}
                   >
                      {option.label}
@@ -182,7 +215,7 @@ function Form() {
                {surveyData[4]?.options.map((option, index) => (
                   <Radio
                      key={index}
-                     value={option.value}
+                     value={option.label}
                   >
                      {option.label}
                   </Radio>
@@ -213,14 +246,25 @@ function Form() {
          </div>
 
          <div className='flex justify-center items-center'>
-            <Button
-               type='submit'
-               className='w-16'
-               onClick={handleSubmit}
-               color='primary'
-            >
-               Enviar
-            </Button>
+            {edit ? (
+               <Button
+                  type='submit'
+                  className='w-16'
+                  onClick={handleSubmit}
+                  color='primary'
+               >
+                  Editar
+               </Button>
+            ) : (
+               <Button
+                  type='submit'
+                  className='w-16'
+                  onClick={handleSubmit}
+                  color='primary'
+               >
+                  Enviar
+               </Button>
+            )}
          </div>
       </form>
    )
