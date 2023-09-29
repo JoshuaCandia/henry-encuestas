@@ -17,7 +17,8 @@ import {
 } from '@nextui-org/react'
 //assets
 import logo from '../assets/logo.png'
-function Form({ setLoading, setId, survey, setSurvey }) {
+
+function Form({ setLoading, id, setId, survey, setSurvey }) {
    let navigate = useNavigate()
 
    const [edit, setEdit] = useState(false)
@@ -98,17 +99,42 @@ function Form({ setLoading, setId, survey, setSurvey }) {
                navigate('/')
             }
          })
-
-         axios
-            .post('http://localhost:3001/filldb', survey)
-            .then((response) => {
-               const id = response.data.id
-               setId(id)
-            })
-            .catch((error) => {
-               console.error(`Error en la solicitud POST: ${error.message}`)
-            })
+         if (edit) {
+            console.log(`http://localhost:3001/update/${id}`)
+            axios
+               .put(`http://localhost:3001/update/${id}`, survey)
+               .then((response) => {
+                  setId(response.data.id)
+               })
+               .catch((error) => {
+                  console.error(`Error en la solicitud PUT: ${error.message}`)
+               })
+         } else {
+            axios
+               .post('http://localhost:3001/filldb', survey)
+               .then((response) => {
+                  const id = response.data.id
+                  setId(id)
+               })
+               .catch((error) => {
+                  console.error(`Error en la solicitud POST: ${error.message}`)
+               })
+         }
       }
+   }
+   const handleCancel = () => {
+      window.scrollTo(0, 0)
+      setEdit(false)
+      localStorage.removeItem('surveyData')
+
+      setSurvey({
+         full_name: '',
+         phone_number: '',
+         start_date: '',
+         preferred_language: '',
+         how_found: '',
+         newsletter_subscription: false
+      })
    }
 
    return (
@@ -247,14 +273,22 @@ function Form({ setLoading, setId, survey, setSurvey }) {
 
          <div className='flex justify-center items-center'>
             {edit ? (
-               <Button
-                  type='submit'
-                  className='w-16'
-                  onClick={handleSubmit}
-                  color='primary'
-               >
-                  Editar
-               </Button>
+               <div className='flex gap-2'>
+                  <Button
+                     type='submit'
+                     className='w-16'
+                     onClick={handleSubmit}
+                     color='primary'
+                  >
+                     Editar
+                  </Button>
+                  <Button
+                     className='w-16'
+                     onClick={handleCancel}
+                  >
+                     Cancelar
+                  </Button>
+               </div>
             ) : (
                <Button
                   type='submit'

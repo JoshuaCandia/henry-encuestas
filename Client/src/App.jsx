@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loader from './components/Loader'
 import Create from './views/Create'
 import Submit from './views/Submit'
@@ -20,6 +20,16 @@ function App() {
    })
    const [loading, setLoading] = useState(false)
    const [id, setId] = useState('')
+
+   useEffect(() => {
+      localStorage.setItem('id', id)
+      const storedId = localStorage.getItem('id')
+
+      if (storedId) {
+         setId(storedId)
+      }
+   }, [id])
+
    return (
       <>
          {loading ? (
@@ -35,6 +45,7 @@ function App() {
                               survey={survey}
                               setSurvey={setSurvey}
                               setLoading={setLoading}
+                              id={id}
                               setId={setId}
                            />
                         </Create>

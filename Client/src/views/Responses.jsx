@@ -41,7 +41,9 @@ function Responses({ id, setLoading, setSurvey, children }) {
             console.error('Error fetching data:', error)
          }
       }
+
       const storedResponsesData = sessionStorage.getItem('responsesData')
+
       if (storedResponsesData) {
          setResponses(JSON.parse(storedResponsesData))
       } else {
