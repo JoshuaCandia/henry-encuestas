@@ -11,13 +11,7 @@ module.exports = sequelize => {
       },
       fullName: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          max: {
-            args: [20],
-            msg: 'El nombre no puede tener más de 20 letras.'
-          }
-        }
+        allowNull: false
       },
       phoneNumber: {
         type: DataTypes.STRING,

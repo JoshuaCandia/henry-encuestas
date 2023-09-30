@@ -1,9 +1,8 @@
 const updateSurveyController = require('../controllers/updateSurvey')
 
 const updateSurvey = async (req, res) => {
-  const id = req.params.id
+  const { id } = req.params
   const newData = req.body
-
   const updated = await updateSurveyController(id, newData)
 
   if (updated) {

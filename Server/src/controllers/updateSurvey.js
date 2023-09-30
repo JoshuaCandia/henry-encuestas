@@ -11,7 +11,6 @@ const updateSurveyController = async (
     newsletterSubscription
   }
 ) => {
-  console.log(id)
   try {
     const response = await Responses.update(
       {
@@ -27,7 +26,7 @@ const updateSurveyController = async (
       }
     )
 
-    if (response[0] > 0) {
+    if (response[1] && response[0] > 0) {
       return true
     } else {
       return false
