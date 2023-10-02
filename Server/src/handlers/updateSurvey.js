@@ -1,16 +1,21 @@
 const updateSurveyController = require('../controllers/updateSurvey')
 
 const updateSurvey = async (req, res) => {
-  const { id } = req.params
-  const newData = req.body
-  const updated = await updateSurveyController(id, newData)
+  try {
+    const id = req.params.id
 
-  if (updated) {
-    res.status(200).json({ message: 'Registro actualizado exitosamente' })
-  } else {
-    res
-      .status(404)
-      .json({ error: 'No se encontró el registro con la ID proporcionada' })
+    const updated = await updateSurveyController(id, req.body)
+
+    if (updated) {
+      res.status(200).json({ message: 'Registro actualizado exitosamente' })
+    } else {
+      res
+        .status(404)
+        .json({ error: 'No se encontró el registro con la ID proporcionada' })
+    }
+  } catch (error) {
+    console.error(error)
+    res.status(400).send(error)
   }
 }
 
